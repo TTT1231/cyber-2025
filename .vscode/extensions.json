@@ -1,0 +1,29 @@
+{
+  "recommendations": [
+    // Vue 相关支持
+    "Vue.volar",
+    // TypeScript/JavaScript 相关
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "yoavbls.pretty-ts-errors",
+    // 前端开发相关
+    "bradlc.vscode-tailwindcss",
+    "mrmlnc.vscode-scss",
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-rename-tag",
+    // 环境与配置
+    "mikestead.dotenv",
+    "editorconfig.editorconfig",
+    // 数据库相关
+    "prisma.prisma",
+    // 开发工具增强
+    "vscode-icons-team.vscode-icons",
+    "jasonnutter.search-node-modules",
+    "naumovs.color-highlight",
+    "aaron-bond.better-comments",
+    // Git 相关
+    "mhutchie.git-graph",
+    // 语言包
+    "ms-ceintl.vscode-language-pack-zh-hans"
+  ]
+}
