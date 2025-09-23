@@ -41,7 +41,13 @@ export default defineConfig(({ mode }) => {
                      console.log('❌ 代理错误:', err.message);
                   });
                   proxy.on('proxyReq', (proxyReq, req) => {
-                     console.log('📤 代理请求:', req.method, req.url, '→', proxyTarget);
+                     console.log(
+                        '📤 代理请求:',
+                        req.method,
+                        req.url,
+                        '→',
+                        proxyTarget
+                     );
                   });
                   proxy.on('proxyRes', (proxyRes, req) => {
                      console.log('📥 代理响应:', proxyRes.statusCode, req.url);

@@ -5,12 +5,14 @@ import { reactive } from 'vue';
 import ForgetPw from './ForgetPw.vue';
 import RegisterAc from './RegisterAc.vue';
 
+import { useRouter } from 'vue-router';
+
 interface FormState {
    username: string;
    password: string;
    remember: boolean;
 }
-
+const currentRouter = useRouter();
 const formState = reactive<FormState>({
    username: '',
    password: '',
@@ -20,8 +22,10 @@ const formState = reactive<FormState>({
 const forgetPwRef = ref<InstanceType<typeof ForgetPw> | null>(null);
 const registerAcRef = ref<InstanceType<typeof RegisterAc> | null>(null);
 
-const onFinish = (values: any) => {
-   console.log('Success:', values);
+const onFinish = () => {
+   currentRouter.push({
+      name: 'ai-role-display',
+   });
 };
 
 const onFinishFailed = (errorInfo: any) => {

@@ -33,7 +33,10 @@ export default [
          'no-console': 'off',
 
          // TypeScript 规则
-         '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+         '@typescript-eslint/no-unused-vars': [
+            'warn',
+            { argsIgnorePattern: '^_' },
+         ],
          '@typescript-eslint/no-explicit-any': 'warn',
 
          // Import/Export 类型规则

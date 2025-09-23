@@ -9,7 +9,7 @@ const s = 1;
       <!-- 左侧背景 -->
       <div class="hidden md:flex md:flex-col md:justify-center md:items-center login-bg">
          <img
-            src="@/assets/images/worker.svg"
+            src="/worker.svg"
             alt="worker"
             class="animate-float h-64 w-2/5 animate-up-down"
          />
