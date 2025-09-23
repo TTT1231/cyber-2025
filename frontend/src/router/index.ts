@@ -6,6 +6,11 @@ const routes = [
       name: 'home',
       component: () => import('@/views/index.vue'),
    },
+   {
+      path: '/ai-role-home',
+      name: 'ai-role-display',
+      component: () => import('@/views/role-display/index.vue'),
+   },
 ];
 
 export const router = createRouter({
