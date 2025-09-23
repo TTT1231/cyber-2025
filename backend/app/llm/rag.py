@@ -77,8 +77,6 @@ class Rag():
             self.cybersql.close()
         return history_query
 
-    def generate_output(self,query):
-        memory = self.get_content(query)
 
 
 
