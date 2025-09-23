@@ -49,12 +49,7 @@ export const useErrorLogStore = defineStore('app-error-log', {
          };
          if (error.response) {
             const {
-               config: {
-                  url = '',
-                  data: params = '',
-                  method = 'get',
-                  headers = {},
-               } = {},
+               config: { url = '', data: params = '', method = 'get', headers = {} } = {},
                data = {},
             } = error.response;
             errInfo.url = url;

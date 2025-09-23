@@ -140,10 +140,7 @@ export class VAxios {
       config.metaData.retryCount += 1;
 
       const currentTime = formatToDateTime();
-      const elapsedTime = dateUtil().diff(
-         dateUtil(config.metaData.startTime),
-         'millisecond'
-      );
+      const elapsedTime = dateUtil().diff(dateUtil(config.metaData.startTime), 'millisecond');
 
       console.warn(
          `[${currentTime}] 请求重试 ${config.metaData.retryCount}/${this.config.meta?.retryCount}: ${config.method?.toUpperCase()} ${config.url} (已耗时: ${elapsedTime}ms)`
@@ -207,11 +204,7 @@ export class VAxios {
       }
    ): boolean {
       // 网络错误或请求超时
-      if (
-         error.code === 'ENOTFOUND' ||
-         error.code === 'ETIMEDOUT' ||
-         error.code === 'ECONNRESET'
-      ) {
+      if (error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT' || error.code === 'ECONNRESET') {
          return true;
       }
 
@@ -300,17 +293,13 @@ export class VAxios {
       };
    }
 
-   async request<T = unknown>(
-      config?: AxiosRequestConfig
-   ): Promise<RequestResult<T>> {
+   async request<T = unknown>(config?: AxiosRequestConfig): Promise<RequestResult<T>> {
       const mergedConfig = this.mergeConfig(config);
       const response = await this.axiosInstance.request(mergedConfig);
       return this.transformResponse(response);
    }
 
-   async get<T = unknown>(
-      config?: AxiosRequestConfig
-   ): Promise<RequestResult<T>> {
+   async get<T = unknown>(config?: AxiosRequestConfig): Promise<RequestResult<T>> {
       const mergedConfig = this.mergeConfig(config);
       const response = await this.axiosInstance.request({
          ...mergedConfig,
@@ -319,9 +308,7 @@ export class VAxios {
       return this.transformResponse(response);
    }
 
-   async post<T = unknown>(
-      config?: AxiosRequestConfig
-   ): Promise<RequestResult<T>> {
+   async post<T = unknown>(config?: AxiosRequestConfig): Promise<RequestResult<T>> {
       const mergedConfig = this.mergeConfig(config);
       const response = await this.axiosInstance.request({
          ...mergedConfig,
@@ -330,9 +317,7 @@ export class VAxios {
       return this.transformResponse(response);
    }
 
-   async put<T = unknown>(
-      config?: AxiosRequestConfig
-   ): Promise<RequestResult<T>> {
+   async put<T = unknown>(config?: AxiosRequestConfig): Promise<RequestResult<T>> {
       const mergedConfig = this.mergeConfig(config);
       const response = await this.axiosInstance.request({
          ...mergedConfig,
@@ -341,9 +326,7 @@ export class VAxios {
       return this.transformResponse(response);
    }
 
-   async delete<T = unknown>(
-      config?: AxiosRequestConfig
-   ): Promise<RequestResult<T>> {
+   async delete<T = unknown>(config?: AxiosRequestConfig): Promise<RequestResult<T>> {
       const mergedConfig = this.mergeConfig(config);
       const response = await this.axiosInstance.request({
          ...mergedConfig,
@@ -374,8 +357,7 @@ export class VAxios {
     * @param token - JWT令牌
     */
    setAuthToken(token: string): void {
-      this.axiosInstance.defaults.headers.common['Authorization'] =
-         `Bearer ${token}`;
+      this.axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
    }
 
    /**

@@ -2,7 +2,7 @@
    "semi": true,
    "trailingComma": "es5",
    "singleQuote": true,
-   "printWidth": 80,
+   "printWidth": 100,
    "tabWidth": 3,
    "useTabs": false,
    "quoteProps": "as-needed",
@@ -13,5 +13,7 @@
    "endOfLine": "lf",
    "proseWrap": "preserve",
    "htmlWhitespaceSensitivity": "css",
-   "embeddedLanguageFormatting": "auto"
+   "embeddedLanguageFormatting": "auto",
+   "vueIndentScriptAndStyle": false,
+   "singleAttributePerLine": true
 }

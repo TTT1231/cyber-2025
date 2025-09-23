@@ -9,7 +9,5 @@ export function apiPath(endpoint: string): string {
 
    // 开发环境：返回完整路径给Vite代理
    // 生产环境：返回相对路径给axios baseURL
-   return import.meta.env.MODE === 'development'
-      ? `/api/${cleanEndpoint}`
-      : cleanEndpoint;
+   return import.meta.env.MODE === 'development' ? `/api/${cleanEndpoint}` : cleanEndpoint;
 }
