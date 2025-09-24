@@ -11,6 +11,11 @@ const routes = [
       name: 'ai-role-display',
       component: () => import('@/views/role-display/index.vue'),
    },
+   {
+      path: '/chat',
+      name: 'chat',
+      component: () => import('@/views/chat/index.vue'),
+   },
 ];
 
 export const router = createRouter({

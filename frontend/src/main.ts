@@ -5,6 +5,7 @@ import { setupStore } from './store';
 import { router } from './router';
 import { setupRouterGuard } from './router/guard';
 import { setupErrorHandle } from './logics/errorhandler';
+import ElementPlusX from 'vue-element-plus-x';
 
 const app = createApp(App);
 
@@ -16,6 +17,9 @@ setupRouterGuard(router);
 
 //配置store
 setupStore(app);
+
+//注册chat组件
+app.use(ElementPlusX);
 
 //配置全局错误处理
 setupErrorHandle(app);

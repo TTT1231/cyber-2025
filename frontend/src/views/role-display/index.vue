@@ -1,8 +1,21 @@
 <script setup lang="ts">
 import AiCard from '@/components/common/ai-card/AiCard.vue';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 const names: Array<'哈姆雷特' | '苏格拉底' | '哈利波特'> = ['哈姆雷特', '苏格拉底', '哈利波特'];
 const currentIndex = ref(-1);
+const router = useRouter();
+
+function handleGoChat() {
+   if (currentIndex.value === -1) {
+      alert('请选择一个角色');
+      return;
+   }
+   // 跳转到聊天页面，并传递选中的角色
+   const selectedRole = names[currentIndex.value];
+   router.push({ path: '/chat', query: { role: selectedRole } });
+}
 </script>
 
 <template>
@@ -39,6 +52,7 @@ const currentIndex = ref(-1);
             type="button"
             class="px-24 py-8 font-bold text-xl bg-[conic-gradient(from_var(--shimmer-angle),theme(colors.slate.950)_0%,theme(colors.slate.100)_10%,theme(colors.slate.950)_20%)] animate-[shimmer_2s_linear_infinite] relative rounded-[24px] after:flex after:absolute after:bg-white after:inset-1 after:rounded-[21px] after:content-[attr(aria-label)] after:items-center after:justify-center after:text-gray-700 after:text-xl after:font-bold after:shadow-md cursor-pointer select-none active:scale-95"
             aria-label="进入对话"
+            @click="handleGoChat()"
          >
             进入对话
          </button>
