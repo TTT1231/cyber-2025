@@ -1,28 +1,6 @@
 {
-  // 使用 IntelliSense 了解相关属性。
-  // 悬停以查看现有属性的描述。
-  // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    //后端代码调试
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Backend:DEBUG (NestJS)",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["run", "start:debug"],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
-      "skipFiles": [
-        "<node_internals>/**",
-        "${workspaceFolder}/backend/node_modules/**"
-      ],
-      "autoAttachChildProcesses": true,
-      "restart": true,
-      "env": {
-        "TS_NODE_PROJECT": "${workspaceFolder}/backend/tsconfig.json"
-      }
-    },
     //前端代码调试
     {
       "type": "node",
@@ -49,18 +27,6 @@
       "webRoot": "${workspaceFolder}/frontend/src",
       "sourceMaps": true,
       "preLaunchTask": "Frontend:Start Dev Server"
-    }
-  ],
-  "compounds": [
-    {
-      "name": "Launch Full Stack",
-      "configurations": ["Backend:DEBUG (NestJS)", "Frontend:DEV (Vite)"],
-      "stopAll": true
-    },
-    {
-      "name": "Debug Full Stack",
-      "configurations": ["Backend:DEBUG (NestJS)", "Frontend:DEBUG (Chrome)"],
-      "stopAll": true
     }
   ]
 }

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import LoginForm from '@/components/common/LoginForm.vue';
-
-const s = 1;
 </script>
 
 <template>

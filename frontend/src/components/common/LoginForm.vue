@@ -50,7 +50,7 @@ const handleChange = (value: SelectValue) => {
             name="basic"
             :label-col="{ span: 8 }"
             autocomplete="off"
-            class="max-w-[450px] w-full"
+            class="max-w-[400px] w-full"
             @finish="onFinish"
             @finishFailed="onFinishFailed"
          >
