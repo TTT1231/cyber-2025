@@ -3,6 +3,7 @@ from dashscope import Generation
 import dashscope
 from prompt import Prompt
 
+
 class LLM():
     def __init__(self, role_name: str, system_prompt: str, max_turns: int):
 
