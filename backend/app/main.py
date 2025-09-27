@@ -1,7 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import json
 
 from app.api import role, session, message, user, database
+
+# 自定义JSON编码器，确保中文字符正确处理
+class CustomJSONResponse:
+    @staticmethod
+    def default(obj):
+        if isinstance(obj, bytes):
+            return obj.decode('utf-8')
+        raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
 
 app = FastAPI(
     title="AI 角色扮演网站 API",
