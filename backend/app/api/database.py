@@ -32,6 +32,9 @@ def initialize_database(db: Session = Depends(get_db)):
             )
         
         # 创建初始用户数据
+        from app.services.user_service import UserService
+        user_service = UserService()
+        
         initial_users = [
             {
                 "username": "测试用户1",
@@ -60,9 +63,11 @@ def initialize_database(db: Session = Depends(get_db)):
                     })
                     continue
                     
+                # 使用UserService来创建用户，确保密码被正确哈希
+                hashed_password = user_service.get_password_hash(user_data["password"])
                 db_user = User(
                     username=user_data["username"],
-                    password=user_data["password"],
+                    password=hashed_password,
                     account=user_data["account"],
                     avatar_url=user_data["avatar_url"]
                 )
