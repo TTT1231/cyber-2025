@@ -8,8 +8,9 @@ class ChatMessages(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="消息id")
     session_id = Column(Integer, nullable=False, comment="会话id")
-    role = Column(Integer, nullable=False,comment="0-assistant,")
-    content = Column(Text,nullable=False,comment="消息内容")
+    query_content = Column(Text,nullable=False,comment="用户提问内容")
+    answer_content = Column(Text,nullable=False,comment="模型回答内容")
     message_type = Column(String(20),nullable=False,server_default="text", comment="消息类型，文本/音频等")
     metadata = Column(JSON, nullable=True, comment="消息元数据,例如音频URL(url)、时长(time)、格式(format)等")
-    created_at = Column(TIMESTAMP, nullable=False, server_default=func.now(), comment="创建时间")
+    created_at = Column(TIMESTAMP, nullable=False, server_default=func.now(), comment="用户提问创建时间")
+    response_at = Column(TIMESTAMP, nullable=False, server_default=func.now(), comment="模型回答返回时间")
