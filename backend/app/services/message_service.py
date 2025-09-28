@@ -4,10 +4,14 @@ from fastapi import HTTPException, status
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 import logging
+import asyncio
 
 from app.models.chat_messages import ChatMessages
 from app.models.chat_sessions import ChatSessions
 from app.schemas.message import MessageCreate, MessageResponse
+from app.llm.llm_api import LLM
+from app.llm.tts_api import TTS
+from app.llm.prompt import Prompt
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -262,10 +266,256 @@ class MessageService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="删除消息失败"
             )
+    
+    @staticmethod
+    def process_chat_message(db: Session, user_id: int, session_id: int, query: str, role_name: str = "哈利波特") -> Dict[str, Any]:
+        """
+        完整的聊天消息处理流程
+        1. 保存用户消息
+        2. 调用LLM生成回复
+        3. 保存助手回复
+        4. 调用TTS生成音频
+        5. 返回完整结果
+        """
+        try:
+            # 验证会话是否存在且用户有权限访问
+            session = db.query(ChatSessions).filter(
+                ChatSessions.id == session_id,
+                ChatSessions.user_id == user_id
+            ).first()
+            
+            if not session:
+                logger.warning(f"用户 {user_id} 尝试在不存在或无权限的会话 {session_id} 中发送消息")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="会话不存在或您没有权限访问"
+                )
+            
+            # 1. 保存用户消息
+            user_message_data = MessageCreate(
+                session_id=session_id,
+                role=1,  # 用户消息
+                content=query,
+                message_type="text",
+                metadata={}
+            )
+            
+            user_message = MessageService.create_message(db, user_id, user_message_data)
+            logger.info(f"用户消息已保存: {user_message.id}")
+            
+            # 2. 获取历史消息用于上下文
+            history_messages = MessageService._get_recent_messages(db, session_id, limit=10)
+            
+            # 3. 调用LLM生成回复
+            system_prompt = MessageService._get_system_prompt_by_role(role_name)
+            llm = LLM(role_name, system_prompt, max_turns=20)
+            
+            # 添加历史消息到LLM上下文
+            MessageService._add_history_to_llm(llm, history_messages)
+            
+            # 生成LLM回复
+            llm_response = llm.generate_output(query)
+            logger.info(f"LLM回复已生成，长度: {len(llm_response)}")
+            
+            # 4. 调用TTS生成音频
+            tts = TTS(voice="Cherry", language="Chinese")
+            audio_url = tts.generate_audio(llm_response)
+            logger.info(f"TTS音频已生成: {audio_url}")
+            
+            # 5. 保存助手回复（包含音频信息）
+            assistant_message_data = MessageCreate(
+                session_id=session_id,
+                role=0,  # 助手消息
+                content=llm_response,
+                message_type="text",
+                metadata={
+                    "audio_url": audio_url,
+                    "voice": "Cherry",
+                    "language": "Chinese",
+                    "role_name": role_name
+                }
+            )
+            
+            assistant_message = MessageService.create_message(db, user_id, assistant_message_data)
+            logger.info(f"助手消息已保存: {assistant_message.id}")
+            
+            # 6. 返回完整结果
+            return {
+                "user_message": {
+                    "id": user_message.id,
+                    "content": user_message.content,
+                    "created_at": user_message.created_at
+                },
+                "assistant_message": {
+                    "id": assistant_message.id,
+                    "content": assistant_message.content,
+                    "audio_url": audio_url,
+                    "created_at": assistant_message.created_at
+                },
+                "session_id": session_id
+            }
+            
+        except HTTPException:
+            raise
         except Exception as e:
             db.rollback()
-            logger.error(f"删除消息时未知错误: {str(e)}")
+            logger.error(f"处理聊天消息时发生错误: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="删除消息失败"
+                detail="处理聊天消息失败"
+            )
+    
+    @staticmethod
+    def _get_recent_messages(db: Session, session_id: int, limit: int = 10) -> List[ChatMessages]:
+        """获取最近的消息用于上下文"""
+        return db.query(ChatMessages).filter(
+            ChatMessages.session_id == session_id
+        ).order_by(ChatMessages.created_at.desc()).limit(limit).all()
+    
+    @staticmethod
+    def _get_system_prompt_by_role(role_name: str) -> str:
+        """根据角色名获取系统提示词"""
+        role_prompts = {
+            "哈利波特": Prompt.harry_potter,
+            "哈姆雷特": Prompt.Hamlet,
+            "苏格拉底": Prompt.Socrates
+        }
+        return role_prompts.get(role_name, Prompt.harry_potter)
+    
+    @staticmethod
+    def _add_history_to_llm(llm: LLM, history_messages: List[ChatMessages]):
+        """将历史消息添加到LLM的上下文中"""
+        # 按时间正序排列历史消息
+        history_messages.reverse()
+        
+        for msg in history_messages:
+            if msg.query_content:  # 用户消息
+                llm.chat_memory.append({"role": "user", "content": msg.query_content})
+            if msg.answer_content:  # 助手消息
+                llm.chat_memory.append({"role": "assistant", "content": msg.answer_content})
+    
+    @staticmethod
+    async def process_voice_message(db: Session, user_id: int, session_id: int, user_text: str, role_name: str = "哈利波特") -> Dict[str, Any]:
+        """
+        处理语音对话消息的异步方法
+        1. 接收用户语音转写文本
+        2. 调用LLM生成AI回复
+        3. 使用TTS生成语音文件
+        4. 保存对话记录到数据库
+        5. 返回音频URL和AI文本
+        """
+        try:
+            # 验证会话是否存在且用户有权限访问
+            session = db.query(ChatSessions).filter(
+                ChatSessions.id == session_id,
+                ChatSessions.user_id == user_id
+            ).first()
+            
+            if not session:
+                logger.warning(f"用户 {user_id} 尝试在不存在或无权限的会话 {session_id} 中发送语音消息")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="会话不存在或您没有权限访问"
+                )
+            
+            # 获取历史消息用于上下文
+            history_messages = MessageService._get_recent_messages(db, session_id, limit=10)
+            
+            # 初始化LLM并添加历史上下文
+            system_prompt = MessageService._get_system_prompt_by_role(role_name)
+            llm = LLM(role_name, system_prompt, max_turns=20)
+            MessageService._add_history_to_llm(llm, history_messages)
+            
+            # 异步调用LLM生成回复
+            ai_response = await asyncio.to_thread(llm.generate_output, user_text)
+            logger.info(f"LLM异步生成回复完成，长度: {len(ai_response)}")
+            
+            # 异步调用TTS生成语音文件
+            tts = TTS(voice="Cherry", language="Chinese")
+            audio_url = await asyncio.to_thread(tts.generate_audio, ai_response)
+            logger.info(f"TTS异步生成音频完成: {audio_url}")
+            
+            # 保存对话记录
+            await MessageService._save_conversation(
+                db=db,
+                user_id=user_id,
+                session_id=session_id,
+                user_message=user_text,
+                ai_message=ai_response,
+                audio_url=audio_url,
+                role_name=role_name
+            )
+            
+            return {
+                "audio_url": audio_url,
+                "ai_text": ai_response,
+                "session_id": session_id,
+                "status": "success"
+            }
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            db.rollback()
+            logger.error(f"处理语音消息时发生错误: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="处理语音消息失败"
+            )
+    
+    @staticmethod
+    async def _save_conversation(
+        db: Session, 
+        user_id: int, 
+        session_id: int, 
+        user_message: str, 
+        ai_message: str, 
+        audio_url: str,
+        role_name: str
+    ) -> Dict[str, int]:
+        """
+        异步保存对话记录到数据库
+        """
+        try:
+            # 保存用户消息 (role=1)
+            user_message_data = MessageCreate(
+                session_id=session_id,
+                role=1,  # 用户消息
+                content=user_message,
+                message_type="text",
+                metadata={"source": "voice_input"}
+            )
+            
+            user_msg = MessageService.create_message(db, user_id, user_message_data)
+            logger.info(f"用户语音消息已保存: {user_msg.id}")
+            
+            # 保存助手消息 (role=0)
+            assistant_message_data = MessageCreate(
+                session_id=session_id,
+                role=0,  # 助手消息
+                content=ai_message,
+                message_type="text",
+                metadata={
+                    "audio_url": audio_url,
+                    "voice": "Cherry",
+                    "language": "Chinese",
+                    "role_name": role_name,
+                    "source": "voice_output"
+                }
+            )
+            
+            assistant_msg = MessageService.create_message(db, user_id, assistant_message_data)
+            logger.info(f"助手语音回复已保存: {assistant_msg.id}")
+            
+            return {
+                "user_message_id": user_msg.id,
+                "assistant_message_id": assistant_msg.id
+            }
+            
+        except Exception as e:
+            db.rollback()
+            logger.error(f"保存对话记录时发生错误: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="保存对话记录失败"
             )

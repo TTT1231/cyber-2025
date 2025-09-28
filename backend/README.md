@@ -190,7 +190,42 @@ export DB_NAME=cyber
 #### 方式二：直接修改配置文件
 编辑 `app/db/session.py` 文件中的数据库连接参数。
 
-### 3. 启动服务
+### 3. LLM模块API密钥配置
+
+**重要：** LLM模块需要API密钥才能正常工作。请按以下步骤配置：
+
+#### 创建API密钥配置文件
+在 `app/llm/` 目录下创建 `api_keys.json` 文件：
+
+```json
+{
+    "api_key": "your-api-key-here",
+    "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "model": "text-embedding-v4"
+}
+```
+
+#### 配置说明
+- **文件位置：** `app/llm/api_keys.json`
+- **文件格式：** JSON格式
+- **必填字段：**
+  - `api_key`: 阿里云百炼服务的API密钥
+  - `base_url`: API服务地址（默认为阿里云百炼兼容模式）
+  - `model`: 使用的模型名称
+
+#### 安全注意事项
+- 该文件已添加到 `.gitignore` 中，不会被提交到版本控制
+- 请妥善保管API密钥，不要在代码中硬编码
+- 团队成员需要各自创建自己的 `api_keys.json` 文件
+
+#### 支持的功能模块
+此配置文件被以下模块使用：
+- `embedding_api.py` - 文本向量化
+- `llm_api.py` - 大语言模型对话
+- `tts_api.py` - 文本转语音
+- `fun_asr.py` - 语音识别
+
+### 4. 启动服务
 ```bash
 # 开发模式启动（自动重载）
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000

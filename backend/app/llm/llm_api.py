@@ -1,7 +1,9 @@
 import os
 from dashscope import Generation
 import dashscope
-from prompt import Prompt
+from .prompt import Prompt
+import json
+from pathlib import Path
 
 
 class LLM():
@@ -16,11 +18,13 @@ class LLM():
         self.role_name = role_name
         self.system_prompt = system_prompt
         self.max_turns = max_turns
-        """
-        配置用户变量：API_KEY your api key 
-        重启IDE
-        """
         self.message = [{"role": "system", "content": self.system_prompt}]
+    
+    def _load_config(self):
+        """加载API配置"""
+        config_path = Path(__file__).parent / "api_keys.json"
+        with open(config_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
 
     def update_max_turns(self,max_turns):
         """
@@ -38,10 +42,12 @@ class LLM():
         dashscope.base_http_api_url = "https://dashscope.aliyuncs.com/api/v1/"
         self.update_chat_memory({"role": "user", "content": query})
         answer_content = ''
+        config = self._load_config()
         completion = Generation.call(
             # 若没有配置环境变量，请用阿里云百炼API Key将下行替换为：api_key = "sk-xxx",
-            api_key=os.getenv("API_KEY"),
+            # api_key=os.getenv("API_KEY"),
             # api_key="sk-dcd129793262482cab9c357fb2d007fc",
+            api_key=config["api_key"],
             # 可按需更换为其它深度思考模型
             model="qwen-flash",
             messages=self.message,
@@ -73,4 +79,18 @@ while True:
     print(llm.generate_output(querys))
     #print('---------------------------------')
     #print(llm.message)
+
+    
+#     llm = LLM("哈利波特",Prompt.harry_potter,20)
+# while True:
+#     querys = input("")
+#     print(llm.generate_output(querys))
+#     #print('---------------------------------')
+#     #print(llm.message)
+# 测试代码已移除，避免在导入时执行
+# if __name__ == "__main__":
+#     llm = LLM("哈利波特", Prompt.harry_potter, 20)
+#     while True:
+#         querys = input("")
+#         print(llm.generate_output(querys))
 

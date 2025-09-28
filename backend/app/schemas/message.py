@@ -21,3 +21,17 @@ class MessageResponse(MessageBase):
     
     class Config:
         from_attributes = True
+
+# 语音消息请求模型
+class VoiceMessageRequest(BaseModel):
+    text: str
+    session_id: int
+    role_name: str = "哈利波特"
+
+# 语音消息响应模型
+class VoiceMessageResponse(BaseModel):
+    audio_url: str
+    ai_text: str
+    session_id: int
+    status: str
+    message: str = "语音对话处理成功"

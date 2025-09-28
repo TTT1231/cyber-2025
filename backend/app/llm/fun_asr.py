@@ -9,15 +9,23 @@ import dashscope
 import os
 import json
 import requests
-# 若没有配置环境变量，请用百炼API Key将下行替换为：dashscope.api_key = "sk-xxx"
+from pathlib import Path
 
 
 
 
 class Fun_ASR():
     @classmethod
+    def _load_config(cls):
+        """加载API配置"""
+        config_path = Path(__file__).parent / "api_keys.json"
+        with open(config_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    @classmethod
     def transcribe(cls, audio_url):
-        dashscope.api_key = os.getenv("API_KEY")
+        config = cls._load_config()
+        dashscope.api_key = config["api_key"]
         task_response = Transcription.async_call(
             model='fun-asr',
             file_urls=[audio_url]
