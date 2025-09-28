@@ -20,11 +20,11 @@ AI 角色扮演网站 · MVP
 
 📖 用户故事
 
-小明（18岁）：选择哈利波特，用语音问“今天魔法课学什么？”，AI 语音回复。
+小明（18 岁）：选择哈利波特，用语音问“今天魔法课学什么？”，AI 语音回复。
 
-小红（20岁）：选择蜘蛛侠，用英文问“Can you teach me some fighting moves?”，AI 用英文语音回答。
+小红（20 岁）：选择蜘蛛侠，用英文问“Can you teach me some fighting moves?”，AI 用英文语音回答。
 
-章阿姨（45岁）：上传爷爷的声音样本，AI 模拟爷爷语气与她对话。
+章阿姨（45 岁）：上传爷爷的声音样本，AI 模拟爷爷语气与她对话。
 
 三、功能设计与优先级
 ✅ 高优先级（MVP 必须实现）
@@ -85,12 +85,13 @@ TTS：Edge TTS（免费）或 ElevenLabs（更自然）
 
 五、系统架构
 前端（Vue3） → WebSocket / REST API
-        ↓
+↓
 后端（FastAPI）
-   1. 接收语音 → Whisper 转文字
-   2. 调用 GPT-4o-mini → 返回文本
-   3. 调用 TTS → 返回音频流
-   4. Redis 维护短记忆
+
+1.  接收语音 → Whisper 转文字
+2.  调用 GPT-4o-mini → 返回文本
+3.  调用 TTS → 返回音频流
+4.  Redis 维护短记忆
 
 六、每日任务拆解（5 天）
 
@@ -147,6 +148,7 @@ Day 5：测试 + 文档 + 提交
 ## 快速启动
 
 ### 1. 安装依赖
+
 ```bash
 # 进入项目目录
 cd backend
@@ -171,6 +173,7 @@ pip install -r requirements.txt
 ### 2. 数据库配置
 
 #### 方式一：使用环境变量（推荐）
+
 ```bash
 # Windows
 set DB_HOST=localhost
@@ -188,44 +191,51 @@ export DB_NAME=cyber
 ```
 
 #### 方式二：直接修改配置文件
+
 编辑 `app/db/session.py` 文件中的数据库连接参数。
 
-### 3. LLM模块API密钥配置
+### 3. LLM 模块 API 密钥配置
 
-**重要：** LLM模块需要API密钥才能正常工作。请按以下步骤配置：
+**重要：** LLM 模块需要 API 密钥才能正常工作。请按以下步骤配置：
 
-#### 创建API密钥配置文件
+#### 创建 API 密钥配置文件
+
 在 `app/llm/` 目录下创建 `api_keys.json` 文件：
 
 ```json
 {
-    "api_key": "your-api-key-here",
-    "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
-    "model": "text-embedding-v4"
+  "api_key": "your-api-key-here",
+  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "model": "text-embedding-v4"
 }
 ```
 
 #### 配置说明
+
 - **文件位置：** `app/llm/api_keys.json`
-- **文件格式：** JSON格式
+- **文件格式：** JSON 格式
 - **必填字段：**
-  - `api_key`: 阿里云百炼服务的API密钥
-  - `base_url`: API服务地址（默认为阿里云百炼兼容模式）
+  - `api_key`: 阿里云百炼服务的 API 密钥
+  - `base_url`: API 服务地址（默认为阿里云百炼兼容模式）
   - `model`: 使用的模型名称
 
 #### 安全注意事项
+
 - 该文件已添加到 `.gitignore` 中，不会被提交到版本控制
-- 请妥善保管API密钥，不要在代码中硬编码
+- 请妥善保管 API 密钥，不要在代码中硬编码
 - 团队成员需要各自创建自己的 `api_keys.json` 文件
 
 #### 支持的功能模块
+
 此配置文件被以下模块使用：
+
 - `embedding_api.py` - 文本向量化
 - `llm_api.py` - 大语言模型对话
 - `tts_api.py` - 文本转语音
 - `fun_asr.py` - 语音识别
 
 ### 4. 启动服务
+
 ```bash
 # 开发模式启动（自动重载）
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -235,36 +245,45 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ### 4. 验证启动
+
 访问以下地址验证服务启动成功：
+
 - 主页：http://localhost:8000
-- API文档：http://localhost:8000/docs
+- API 文档：http://localhost:8000/docs
 - 健康检查：http://localhost:8000/health
 
 ## FastAPI 接口查看方法
 
 ### 1. Swagger UI 文档（推荐）
+
 启动服务后，访问：http://localhost:8000/docs
 
 功能特点：
-- 📖 完整的API文档展示
+
+- 📖 完整的 API 文档展示
 - 🧪 在线接口测试功能
 - 📝 请求/响应示例
 - 🔍 接口参数详细说明
 
 ### 2. ReDoc 文档
+
 访问：http://localhost:8000/redoc
 
 功能特点：
+
 - 📚 更加美观的文档界面
-- 📋 结构化的API展示
+- 📋 结构化的 API 展示
 - 🔗 便于分享和查阅
 
 ### 3. OpenAPI JSON
+
 访问：http://localhost:8000/openapi.json
-- 获取完整的OpenAPI规范JSON文件
-- 可用于生成客户端SDK
+
+- 获取完整的 OpenAPI 规范 JSON 文件
+- 可用于生成客户端 SDK
 
 ### 4. 命令行查看
+
 ```bash
 # 查看所有路由
 uvicorn app.main:app --reload --log-level info
@@ -278,7 +297,8 @@ curl -X GET "http://localhost:8000/api/roles/"
 
 ### 1. 自动初始化（推荐）
 
-#### 使用API接口初始化
+#### 使用 API 接口初始化
+
 ```bash
 # 启动服务后，调用初始化接口
 curl -X POST "http://localhost:8000/api/database/init"
@@ -288,6 +308,7 @@ curl -X POST "http://localhost:8000/api/database/init"
 ```
 
 #### 初始化内容包括：
+
 - ✅ 自动创建 `cyber` 数据库（如果不存在）
 - ✅ 创建所有必要的数据表
 - ✅ 插入预设角色数据：
@@ -297,6 +318,7 @@ curl -X POST "http://localhost:8000/api/database/init"
 ### 2. 手动数据库操作
 
 #### 创建数据库
+
 ```sql
 -- 连接MySQL服务器
 mysql -u root -p
@@ -309,6 +331,7 @@ USE cyber;
 ```
 
 #### 检查数据库状态
+
 ```bash
 # 测试数据库连接
 curl -X GET "http://localhost:8000/api/database/test-connection"
@@ -325,6 +348,7 @@ curl -X POST "http://localhost:8000/api/database/reset?confirm=true"
 ```
 
 ⚠️ **注意事项：**
+
 - 重置操作会删除所有现有数据
 - 生产环境请谨慎使用
 - 建议在重置前备份重要数据
@@ -332,12 +356,15 @@ curl -X POST "http://localhost:8000/api/database/reset?confirm=true"
 ### 4. 数据库迁移
 
 #### 表结构变更
+
 当模型文件发生变化时：
+
 1. 修改 `app/models/` 目录下的模型文件
-2. 重启服务，SQLAlchemy会自动检测变更
+2. 重启服务，SQLAlchemy 会自动检测变更
 3. 或调用初始化接口重新创建表结构
 
 #### 数据备份与恢复
+
 ```bash
 # 备份数据库
 mysqldump -u root -p cyber > backup_$(date +%Y%m%d_%H%M%S).sql
@@ -349,6 +376,7 @@ mysql -u root -p cyber < backup_20240101_120000.sql
 ### 5. 常见问题排查
 
 #### 连接失败
+
 ```bash
 # 检查MySQL服务状态
 # Windows
@@ -360,6 +388,7 @@ sudo systemctl start mysql
 ```
 
 #### 权限问题
+
 ```sql
 -- 创建用户并授权
 CREATE USER 'cyber_user'@'localhost' IDENTIFIED BY 'your_password';
@@ -368,7 +397,9 @@ FLUSH PRIVILEGES;
 ```
 
 #### 编码问题
+
 确保数据库和表都使用 `utf8mb4` 编码：
+
 ```sql
 ALTER DATABASE cyber CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
@@ -384,46 +415,48 @@ ALTER DATABASE cyber CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 MVP 不需要复杂账号系统，核心表：角色 / 会话 / 消息
 
 1. 角色表（roles）
-CREATE TABLE roles (
-    id SERIAL PRIMARY KEY COMMENT '角色id',
-    name VARCHAR(50) NOT NULL COMMENT '角色名',
-    description TEXT COMMENT '角色描述',
-    voice_sample_url VARCHAR(255) COMMENT '声音样本（可选）',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
-);
+   CREATE TABLE roles (
+   id SERIAL PRIMARY KEY COMMENT '角色 id',
+   name VARCHAR(50) NOT NULL COMMENT '角色名',
+   description TEXT COMMENT '角色描述',
+   voice_sample_url VARCHAR(255) COMMENT '声音样本（可选）',
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+   );
 
 2. 会话表（chat_sessions）
-CREATE TABLE chat_sessions (
-    id SERIAL PRIMARY KEY COMMENT '会话id',
-    role_id INT NOT NULL COMMENT '角色id',
-    last_message_at TIMESTAMP COMMENT '最近一次对话时间',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    FOREIGN KEY (role_id) REFERENCES roles(id)
-);
+   CREATE TABLE chat_sessions (
+   id SERIAL PRIMARY KEY COMMENT '会话 id',
+   role_id INT NOT NULL COMMENT '角色 id',
+   last_message_at TIMESTAMP COMMENT '最近一次对话时间',
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+   FOREIGN KEY (role_id) REFERENCES roles(id)
+   );
 
 3. 消息表（chat_messages）
-CREATE TABLE chat_messages (
-    id SERIAL PRIMARY KEY COMMENT '消息id',
-    session_id INT NOT NULL COMMENT '会话id',
-    role INT NOT NULL COMMENT '0-assistant,1-user',
-    content TEXT NOT NULL COMMENT '消息内容',
-    message_type VARCHAR(20) DEFAULT 'text' COMMENT '消息类型，文本/音频等',
-    metadata JSON COMMENT '消息元数据（如音频URL/时长/格式）',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    FOREIGN KEY (session_id) REFERENCES chat_sessions(id)
-);
+   CREATE TABLE chat_messages (
+   id SERIAL PRIMARY KEY COMMENT '消息 id',
+   session_id INT NOT NULL COMMENT '会话 id',
+   role INT NOT NULL COMMENT '0-assistant,1-user',
+   content TEXT NOT NULL COMMENT '消息内容',
+   message_type VARCHAR(20) DEFAULT 'text' COMMENT '消息类型，文本/音频等',
+   metadata JSON COMMENT '消息元数据（如音频 URL/时长/格式）',
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+   FOREIGN KEY (session_id) REFERENCES chat_sessions(id)
+   );
 
 🌐 API 设计（MVP 范围）
 
-## 完整API接口列表
+## 完整 API 接口列表
 
 ### 1. 数据库管理接口 `/api/database`
+
 - `POST /api/database/init` → 初始化数据库和基础数据
 - `GET /api/database/test-connection` → 测试数据库连接
 - `GET /api/database/status` → 获取数据库状态信息
 - `POST /api/database/reset` → 重置数据库（需确认）
 
 ### 2. 角色接口 `/api/roles`
+
 - `POST /api/roles/` → 创建角色
 - `GET /api/roles/` → 获取角色列表
 - `GET /api/roles/{id}` → 获取角色详情
@@ -432,18 +465,21 @@ CREATE TABLE chat_messages (
 - `GET /api/roles/system/roles` → 获取系统预设角色
 
 ### 3. 会话接口 `/api/sessions`
+
 - `POST /api/sessions/` → 创建新会话（选择一个角色）
 - `GET /api/sessions/` → 获取所有会话列表
 - `GET /api/sessions/{id}` → 获取会话详情
 - `DELETE /api/sessions/{id}` → 删除会话
 
 ### 4. 消息接口 `/api/messages`
+
 - `POST /api/messages/` → 发送消息
   - 入参：session_id, role, content, message_type, metadata
   - 出参：存储消息记录（含 AI 回复）
 - `GET /api/messages/?session_id={id}` → 获取某会话的所有消息
 
 ### 5. 用户接口 `/api/users`
+
 - `POST /api/users/` → 创建用户
 - `GET /api/users/` → 获取用户列表
 - `GET /api/users/{id}` → 获取用户详情
@@ -451,5 +487,6 @@ CREATE TABLE chat_messages (
 - `DELETE /api/users/{id}` → 删除用户
 
 ### 6. 系统接口
-- `GET /` → API基本信息
+
+- `GET /` → API 基本信息
 - `GET /health` → 健康检查

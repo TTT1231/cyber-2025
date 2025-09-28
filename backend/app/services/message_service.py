@@ -380,7 +380,10 @@ class MessageService:
             "哈姆雷特": Prompt.Hamlet,
             "苏格拉底": Prompt.Socrates
         }
-        return role_prompts.get(role_name, Prompt.harry_potter)
+        # 如果找不到对应的角色提示词，使用哈利波特作为默认值
+        prompt = role_prompts.get(role_name, Prompt.harry_potter)
+        logger.info(f"为角色 '{role_name}' 获取系统提示词，使用: {list(role_prompts.keys())[list(role_prompts.values()).index(prompt)] if prompt in role_prompts.values() else '默认(哈利波特)'}")
+        return prompt
     
     @staticmethod
     def _add_history_to_llm(llm: LLM, history_messages: List[ChatMessages]):
@@ -405,7 +408,7 @@ class MessageService:
         5. 返回音频URL和AI文本
         """
         try:
-            # 验证会话是否存在且用户有权限访问
+            # 验证会话是否存在且用户有权限访问，同时获取角色信息
             session = db.query(ChatSessions).filter(
                 ChatSessions.id == session_id,
                 ChatSessions.user_id == user_id
@@ -418,12 +421,26 @@ class MessageService:
                     detail="会话不存在或您没有权限访问"
                 )
             
+            # 从会话中获取角色信息
+            from app.models.role import Role
+            role = db.query(Role).filter(Role.id == session.role_id).first()
+            if not role:
+                logger.warning(f"会话 {session_id} 关联的角色 {session.role_id} 不存在")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="会话关联的角色不存在"
+                )
+            
+            # 使用会话中的角色名称，而不是传入的参数
+            actual_role_name = role.name
+            logger.info(f"使用会话中的角色: {actual_role_name} (角色ID: {role.id})")
+            
             # 获取历史消息用于上下文
             history_messages = MessageService._get_recent_messages(db, session_id, limit=10)
             
-            # 初始化LLM并添加历史上下文
-            system_prompt = MessageService._get_system_prompt_by_role(role_name)
-            llm = LLM(role_name, system_prompt, max_turns=20)
+            # 初始化LLM并添加历史上下文，使用实际的角色名称
+            system_prompt = MessageService._get_system_prompt_by_role(actual_role_name)
+            llm = LLM(actual_role_name, system_prompt, max_turns=20)
             MessageService._add_history_to_llm(llm, history_messages)
             
             # 异步调用LLM生成回复
@@ -443,7 +460,7 @@ class MessageService:
                 user_message=user_text,
                 ai_message=ai_response,
                 audio_url=audio_url,
-                role_name=role_name
+                role_name=actual_role_name  # 使用实际的角色名称
             )
             
             return {
