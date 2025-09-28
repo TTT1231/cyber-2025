@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, useTemplateRef } from 'vue';
 import type { BubbleListItemProps, BubbleListProps } from 'vue-element-plus-x/types/BubbleList';
-
+import { createSession, sendMessage } from '@/apis/user';
 // 定义消息角色枚举
 type MessageRole = 'user' | 'ai';
 
@@ -300,6 +300,15 @@ function dynamicComputedWidth() {
    return chatArea.value?.clientWidth;
 }
 onMounted(() => {
+   const res = sendMessage({
+      session_id: 19,
+      role: 1,
+      content: '你好',
+      message_type: 'text',
+      metadata: {},
+   });
+
+   console.log('消息返回：', res); // 这里就是后端返回的数据
    document.addEventListener('click', handleClickOutside);
    userInputArea.value!.style.width = dynamicComputedWidth() + 'px';
 

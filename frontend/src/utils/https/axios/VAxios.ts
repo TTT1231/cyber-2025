@@ -55,8 +55,12 @@ export class VAxios {
       // 请求拦截器
       this.axiosInstance.interceptors.request.use(
          config => {
+            // 读取本地 token
+            const token = localStorage.getItem('token');
             // 可以在这里添加 token、请求头等
-
+            if (token) {
+               config.headers?.set('Authorization', `Bearer ${token}`);
+            }
             // 只在首次请求时初始化 metaData，避免覆盖重试请求的数据
             if (!config.metaData) {
                config.metaData = {

@@ -8,6 +8,7 @@ import RegisterAc from './RegisterAc.vue';
 import { useRouter } from 'vue-router';
 import { login } from '@/apis/user';
 import { message } from 'ant-design-vue';
+import axios from 'axios';
 
 interface FormState {
    username: string;
@@ -28,11 +29,16 @@ const onFinish = async () => {
    try {
       const res = await login(formState.username, formState.password);
 
-      if (res.status === 200)
+      if (res.status === 200) {
+         //保存token
+         const token = res.data.access_token;
+         // 设置 axios 默认 token（之后请求不用每次手动加）
+         // ✅ 保存 token
+         localStorage.setItem('token', token);
          currentRouter.push({
             name: 'ai-role-display',
          });
-      else {
+      } else {
          message.error({
             content: '用户名或密码错误，请重试',
             duration: 1,
