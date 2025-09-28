@@ -10,7 +10,7 @@ const handleChatStarting = (value: boolean) => {
 };
 </script>
 <template>
-   <div class="flex items-center flex-col h-screen hamuleite-bg-img">
+   <div class="flex items-center flex-col h-screen">
       <div
          v-if="!startChating"
          class="py-8"
@@ -25,11 +25,3 @@ const handleChatStarting = (value: boolean) => {
       </div>
    </div>
 </template>
-<style>
-.hamuleite-bg-img {
-   background-image: url('../../../public/images/ai-roles/hamuleite.gif');
-   background-repeat: no-repeat; /* 不重复 */
-   background-size: contain; /* 保持比例缩放，完整显示图片 */
-   background-position: center; /* 居中显示 */
-}
-</style>

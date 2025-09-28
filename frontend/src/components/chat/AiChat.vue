@@ -440,7 +440,7 @@ onUnmounted(() => {
 
       <!-- TODO输入框 -->
       <div
-         class="absolute bottom-0"
+         class="absolute bottom-4"
          ref="user-input-area"
       >
          <Sender
