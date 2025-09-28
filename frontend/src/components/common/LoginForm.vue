@@ -6,6 +6,8 @@ import ForgetPw from './ForgetPw.vue';
 import RegisterAc from './RegisterAc.vue';
 
 import { useRouter } from 'vue-router';
+import { login } from '@/apis/user';
+import { message } from 'ant-design-vue';
 
 interface FormState {
    username: string;
@@ -22,10 +24,26 @@ const formState = reactive<FormState>({
 const forgetPwRef = ref<InstanceType<typeof ForgetPw> | null>(null);
 const registerAcRef = ref<InstanceType<typeof RegisterAc> | null>(null);
 
-const onFinish = () => {
-   currentRouter.push({
-      name: 'ai-role-display',
-   });
+const onFinish = async () => {
+   try {
+      const res = await login(formState.username, formState.password);
+
+      if (res.status === 200)
+         currentRouter.push({
+            name: 'ai-role-display',
+         });
+      else {
+         message.error({
+            content: '用户名或密码错误，请重试',
+            duration: 1,
+         });
+      }
+   } catch {
+      message.error({
+         content: '用户名或密码错误，请重试',
+         duration: 1,
+      });
+   }
 };
 
 const onFinishFailed = (errorInfo: any) => {
