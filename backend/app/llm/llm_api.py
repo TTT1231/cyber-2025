@@ -73,20 +73,6 @@ class LLM():
             self.message.pop(-2)
             self.message.pop(-2)
             self.message.reverse()
-llm = LLM("哈利波特",Prompt.harry_potter,20)
-while True:
-    querys = input("")
-    print(llm.generate_output(querys))
-    #print('---------------------------------')
-    #print(llm.message)
-
-    
-#     llm = LLM("哈利波特",Prompt.harry_potter,20)
-# while True:
-#     querys = input("")
-#     print(llm.generate_output(querys))
-#     #print('---------------------------------')
-#     #print(llm.message)
 # 测试代码已移除，避免在导入时执行
 # if __name__ == "__main__":
 #     llm = LLM("哈利波特", Prompt.harry_potter, 20)
