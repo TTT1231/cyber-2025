@@ -32,7 +32,6 @@ const onFinish = async () => {
       if (res.status === 200) {
          //保存token
          const token = res.data.access_token;
-         // 设置 axios 默认 token（之后请求不用每次手动加）
          // ✅ 保存 token
          localStorage.setItem('token', token);
          currentRouter.push({
