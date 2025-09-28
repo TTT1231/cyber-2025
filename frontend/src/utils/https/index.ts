@@ -23,7 +23,7 @@ console.log('🚀 API配置:', {
 
 export const defHttp = new VAxios({
    baseURL: baseURL,
-   timeout: 10 * 1000,
+   timeout: 60 * 1000,
    meta: {
       retryCount: 3,
       retryDelay: 1000,

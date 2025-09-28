@@ -12,6 +12,30 @@ export async function login(account: string, password: string) {
    });
 }
 
+//register
+export async function register(userPayload: UserPayloadDTO) {
+   return defHttp.post({
+      url: apiPath('/api/users/register'),
+      data: userPayload,
+      metaData: {
+         retryCount: 0, // 注册请求不重试
+         startTime: '',
+      },
+   });
+}
+
+//update user
+export async function updateUser(userPayload: UserPayloadDTO) {
+   return defHttp.put({
+      url: apiPath('/api/users/profile'),
+      data: userPayload,
+      metaData: {
+         retryCount: 0, // 更新请求不重试
+         startTime: '',
+      },
+   });
+}
+
 // src/api/message.ts
 export async function sendMessage(data: {
    session_id: number;

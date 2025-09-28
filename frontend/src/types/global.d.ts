@@ -19,3 +19,10 @@ declare interface ErrorLogInfo {
    // Error time
    time?: string;
 }
+
+declare interface UserPayloadDTO {
+   username: string;
+   account: string;
+   avatar_url: string;
+   password: string;
+}
