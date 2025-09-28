@@ -393,9 +393,9 @@ class MessageService:
         
         for msg in history_messages:
             if msg.query_content:  # 用户消息
-                llm.chat_memory.append({"role": "user", "content": msg.query_content})
+                llm.message.append({"role": "user", "content": msg.query_content})
             if msg.answer_content:  # 助手消息
-                llm.chat_memory.append({"role": "assistant", "content": msg.answer_content})
+                llm.message.append({"role": "assistant", "content": msg.answer_content})
     
     @staticmethod
     async def process_voice_message(db: Session, user_id: int, session_id: int, user_text: str, role_name: str = "哈利波特") -> Dict[str, Any]:
